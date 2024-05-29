@@ -2,6 +2,7 @@ package ante_test
 
 import (
 	"fmt"
+	"github.com/skip-mev/feemarket/x/feemarket/ante"
 	"testing"
 
 	"cosmossdk.io/math"
@@ -14,6 +15,18 @@ import (
 	antesuite "github.com/skip-mev/feemarket/x/feemarket/ante/suite"
 	"github.com/skip-mev/feemarket/x/feemarket/types"
 )
+
+func TestCheckTxFee(t *testing.T) {
+	gasPrice := sdk.NewDecCoin("stake", math.OneInt())
+	feeProvided := sdk.NewCoin("stake", math.NewIntFromUint64(15))
+	gasWanted := int64(10)                                                             // the gas set in a tx
+	gasConsumed := int64(5)                                                            // actually consumed by tx
+	p, tip, _ := ante.CheckTxFee(gasConsumed, gasPrice, feeProvided, gasWanted, false) // false - posthandler
+	//fmt.Println(p, tip, err)
+	totalDeduct := p.Add(tip)
+	fmt.Println("fee provided: ", feeProvided)
+	fmt.Println("total deduct: ", totalDeduct)
+}
 
 func TestAnteHandle(t *testing.T) {
 	// Same data for every test case
