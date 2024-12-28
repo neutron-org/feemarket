@@ -160,7 +160,7 @@ func (dfd FeeMarketDeductDecorator) PayOutFeeAndTip(ctx sdk.Context, fee, tip sd
 
 	// deduct the fees and tip
 	if !fee.IsNil() {
-		err := DeductCoins(dfd.bankKeeper, ctx, sdk.NewCoins(fee), params.DistributeFees)
+		err := DeductCoins(dfd.bankKeeper, ctx, sdk.NewCoins(fee), params.FeeRecipientModule, params.DistributeFees)
 		if err != nil {
 			return err
 		}
@@ -173,7 +173,7 @@ func (dfd FeeMarketDeductDecorator) PayOutFeeAndTip(ctx sdk.Context, fee, tip sd
 
 	proposer := sdk.AccAddress(ctx.BlockHeader().ProposerAddress)
 	if !tip.IsNil() {
-		err := SendTip(dfd.bankKeeper, ctx, proposer, sdk.NewCoins(tip))
+		tipPayee, err := SendTip(dfd.bankKeeper, ctx, params.SendTipToProposer, params.FeeRecipientModule, proposer, sdk.NewCoins(tip))
 		if err != nil {
 			return err
 		}
@@ -181,7 +181,7 @@ func (dfd FeeMarketDeductDecorator) PayOutFeeAndTip(ctx sdk.Context, fee, tip sd
 		events = append(events, sdk.NewEvent(
 			feemarkettypes.EventTypeTipPay,
 			sdk.NewAttribute(feemarkettypes.AttributeKeyTip, tip.String()),
-			sdk.NewAttribute(feemarkettypes.AttributeKeyTipPayee, proposer.String()),
+			sdk.NewAttribute(feemarkettypes.AttributeKeyTipPayee, tipPayee),
 		))
 	}
 
@@ -190,24 +190,46 @@ func (dfd FeeMarketDeductDecorator) PayOutFeeAndTip(ctx sdk.Context, fee, tip sd
 }
 
 // DeductCoins deducts coins from the given account.
-// Coins can be sent to the default fee collector (
-// causes coins to be distributed to stakers) or kept in the fee collector account (soft burn).
-func DeductCoins(bankKeeper BankKeeper, ctx sdk.Context, coins sdk.Coins, distributeFees bool) error {
+// Coins can be sent to the default fee collector (causes coins to be distributed to stakers),
+// to the module account or kept in the fee collector account (soft burn).
+func DeductCoins(bankKeeper BankKeeper, ctx sdk.Context, coins sdk.Coins, recipientModule string, distributeFees bool) error {
 	if distributeFees {
-		err := bankKeeper.SendCoinsFromModuleToModule(ctx, feemarkettypes.FeeCollectorName, authtypes.FeeCollectorName, coins)
+		recipientModule = authtypes.FeeCollectorName
+	}
+
+	if recipientModule != "" {
+		err := bankKeeper.SendCoinsFromModuleToModule(ctx, feemarkettypes.FeeCollectorName, recipientModule, coins)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
-// SendTip sends a tip to the current block proposer.
-func SendTip(bankKeeper BankKeeper, ctx sdk.Context, proposer sdk.AccAddress, coins sdk.Coins) error {
-	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, feemarkettypes.FeeCollectorName, proposer, coins)
-	if err != nil {
-		return err
+// SendTip sends a tip to the current block proposer or to the module account.
+func SendTip(
+	bankKeeper BankKeeper,
+	ctx sdk.Context,
+	sendToProposer bool,
+	recipientModule string,
+	proposer sdk.AccAddress,
+	coins sdk.Coins,
+) (string, error) {
+	var err error
+
+	tipPayee := recipientModule
+
+	if sendToProposer {
+		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, feemarkettypes.FeeCollectorName, proposer, coins)
+		tipPayee = proposer.String()
+	} else {
+		err = bankKeeper.SendCoinsFromModuleToModule(ctx, feemarkettypes.FeeCollectorName, recipientModule, coins)
 	}
 
-	return nil
+	if err != nil {
+		return "", err
+	}
+
+	return tipPayee, nil
 }

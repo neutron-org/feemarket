@@ -20,6 +20,9 @@ func NewParams(
 	maxLearningRate math.LegacyDec,
 	feeDenom string,
 	enabled bool,
+	distributeFees bool,
+	feeRecipientModule string,
+	sendTipToProposer bool,
 ) Params {
 	return Params{
 		Alpha:               alpha,
@@ -33,6 +36,9 @@ func NewParams(
 		Window:              window,
 		FeeDenom:            feeDenom,
 		Enabled:             enabled,
+		DistributeFees:      distributeFees,
+		FeeRecipientModule:  feeRecipientModule,
+		SendTipToProposer:   sendTipToProposer,
 	}
 }
 
@@ -80,6 +86,10 @@ func (p *Params) ValidateBasic() error {
 
 	if p.FeeDenom == "" {
 		return fmt.Errorf("fee denom must be set")
+	}
+
+	if !p.SendTipToProposer && p.FeeRecipientModule == "" {
+		return fmt.Errorf("fee recipient module must be set in order to send tip")
 	}
 
 	return nil
