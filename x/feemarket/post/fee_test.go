@@ -198,7 +198,7 @@ func TestPostHandleMock(t *testing.T) {
 	const (
 		baseDenom              = "stake"
 		resolvableDenom        = "atom"
-		expectedConsumedGas    = 10631
+		expectedConsumedGas    = 10649
 		expectedConsumedSimGas = expectedConsumedGas + post.BankSendGasConsumption
 		gasLimit               = expectedConsumedSimGas
 	)
@@ -398,7 +398,7 @@ func TestPostHandleMock(t *testing.T) {
 			Simulate:          false,
 			ExpPass:           true,
 			ExpErr:            nil,
-			ExpectConsumedGas: 15340, // extra gas consumed because msg server is run, but deduction is skipped
+			ExpectConsumedGas: 15412, // extra gas consumed because msg server is run, but deduction is skipped
 			Mock:              true,
 		},
 		{
@@ -584,9 +584,9 @@ func TestPostHandle(t *testing.T) {
 	const (
 		baseDenom           = "stake"
 		resolvableDenom     = "atom"
-		expectedConsumedGas = 36650
+		expectedConsumedGas = 36668
 
-		expectedConsumedGasResolve = 36524 // slight difference due to denom resolver
+		expectedConsumedGasResolve = 36542 // slight difference due to denom resolver
 
 		gasLimit = 100000
 	)
@@ -695,7 +695,7 @@ func TestPostHandle(t *testing.T) {
 			Simulate:          false,
 			ExpPass:           true,
 			ExpErr:            nil,
-			ExpectConsumedGas: 36650,
+			ExpectConsumedGas: expectedConsumedGas,
 			Mock:              false,
 		},
 		{
@@ -744,7 +744,7 @@ func TestPostHandle(t *testing.T) {
 			Simulate:          false,
 			ExpPass:           true,
 			ExpErr:            nil,
-			ExpectConsumedGas: 36650,
+			ExpectConsumedGas: expectedConsumedGas,
 			Mock:              false,
 		},
 		{
@@ -810,7 +810,7 @@ func TestPostHandle(t *testing.T) {
 			Simulate:          false,
 			ExpPass:           true,
 			ExpErr:            nil,
-			ExpectConsumedGas: 15340, // extra gas consumed because msg server is run, but bank keepers are skipped
+			ExpectConsumedGas: 15412, // extra gas consumed because msg server is run, but bank keepers are skipped
 			Mock:              false,
 		},
 		{
