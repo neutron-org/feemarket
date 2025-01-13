@@ -90,10 +90,7 @@ message Params {
   // distributed to all stakers.
   bool distribute_fees = 12;
 
-  // FeeRecipientModule is a module account that the fee will be sent to.
-  string fee_recipient_module = 13;
-
   // SendTipToProposer is a boolean that determines whether the tip is sent to a
   // proposer or to a module account.
-  bool send_tip_to_proposer = 14;
+  bool send_tip_to_proposer = 13;
 }

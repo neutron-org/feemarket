@@ -61,7 +61,6 @@ func DefaultParams() Params {
 		DefaultFeeDenom,
 		true,
 		false,
-		"",
 		true,
 	)
 }

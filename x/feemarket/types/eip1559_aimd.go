@@ -69,7 +69,6 @@ func DefaultAIMDParams() Params {
 		DefaultAIMDFeeDenom,
 		true,
 		false,
-		"",
 		true,
 	)
 }

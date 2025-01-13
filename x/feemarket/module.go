@@ -177,8 +177,9 @@ type Outputs struct {
 
 func ProvideModule(in Inputs) Outputs {
 	var (
-		authority sdk.AccAddress
-		err       error
+		authority          sdk.AccAddress
+		feeRecipientModule string
+		err                error
 	)
 	if in.Config.Authority != "" {
 		authority, err = sdk.AccAddressFromBech32(in.Config.Authority)
@@ -189,12 +190,19 @@ func ProvideModule(in Inputs) Outputs {
 		authority = authtypes.NewModuleAddress(govtypes.ModuleName)
 	}
 
+	if in.Config.FeeRecipientModule != "" {
+		feeRecipientModule = in.Config.FeeRecipientModule
+	} else {
+		feeRecipientModule = authtypes.FeeCollectorName
+	}
+
 	Keeper := keeper.NewKeeper(
 		in.Cdc,
 		in.Key,
 		in.AccountKeeper,
 		nil,
 		authority.String(),
+		feeRecipientModule,
 	)
 
 	m := NewAppModule(in.Cdc, *Keeper)

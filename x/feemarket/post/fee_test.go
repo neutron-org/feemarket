@@ -35,7 +35,7 @@ func TestDeductCoins(t *testing.T) {
 		{
 			name:            "valid no coins",
 			coins:           sdk.NewCoins(),
-			recipientModule: "",
+			recipientModule: "test_fee_collector",
 			distributeFees:  false,
 			wantErr:         false,
 		},
@@ -49,21 +49,21 @@ func TestDeductCoins(t *testing.T) {
 		{
 			name:            "valid - distribute",
 			coins:           sdk.NewCoins(sdk.NewCoin("test", math.NewInt(10))),
-			recipientModule: "",
+			recipientModule: "test_fee_collector",
 			distributeFees:  true,
 			wantErr:         false,
 		},
 		{
 			name:            "valid no coins - distribute",
 			coins:           sdk.NewCoins(),
-			recipientModule: "",
+			recipientModule: "test_fee_collector",
 			distributeFees:  true,
 			wantErr:         false,
 		},
 		{
 			name:            "valid zero coin - distribute",
 			coins:           sdk.NewCoins(sdk.NewCoin("test", math.ZeroInt())),
-			recipientModule: "",
+			recipientModule: "test_fee_collector",
 			distributeFees:  true,
 			wantErr:         false,
 		},
@@ -72,10 +72,6 @@ func TestDeductCoins(t *testing.T) {
 		t.Run(fmt.Sprintf("Case %s", tc.name), func(t *testing.T) {
 			s := antesuite.SetupTestSuite(t, true)
 			if tc.distributeFees {
-				s.MockBankKeeper.On("SendCoinsFromModuleToModule", s.Ctx, types.FeeCollectorName,
-					authtypes.FeeCollectorName,
-					tc.coins).Return(nil).Once()
-			} else if tc.recipientModule != "" {
 				s.MockBankKeeper.On("SendCoinsFromModuleToModule", s.Ctx, types.FeeCollectorName,
 					tc.recipientModule,
 					tc.coins).Return(nil).Once()
@@ -90,33 +86,38 @@ func TestDeductCoins(t *testing.T) {
 
 func TestDeductCoinsAndDistribute(t *testing.T) {
 	tests := []struct {
-		name    string
-		coins   sdk.Coins
-		wantErr bool
+		name            string
+		coins           sdk.Coins
+		recipientModule string
+		wantErr         bool
 	}{
 		{
-			name:    "valid",
-			coins:   sdk.NewCoins(sdk.NewCoin("test", math.NewInt(10))),
-			wantErr: false,
+			name:            "valid",
+			coins:           sdk.NewCoins(sdk.NewCoin("test", math.NewInt(10))),
+			recipientModule: "test_fee_collector",
+			wantErr:         false,
 		},
 		{
-			name:    "valid no coins",
-			coins:   sdk.NewCoins(),
-			wantErr: false,
+			name:            "valid no coins",
+			coins:           sdk.NewCoins(),
+			recipientModule: "test_fee_collector",
+			wantErr:         false,
 		},
 		{
-			name:    "valid zero coin",
-			coins:   sdk.NewCoins(sdk.NewCoin("test", math.ZeroInt())),
-			wantErr: false,
+			name:            "valid zero coin",
+			coins:           sdk.NewCoins(sdk.NewCoin("test", math.ZeroInt())),
+			recipientModule: "test_fee_collector",
+			wantErr:         false,
 		},
 	}
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("Case %s", tc.name), func(t *testing.T) {
 			s := antesuite.SetupTestSuite(t, true)
-			s.MockBankKeeper.On("SendCoinsFromModuleToModule", s.Ctx, types.FeeCollectorName, authtypes.FeeCollectorName,
+			s.MockBankKeeper.On("SendCoinsFromModuleToModule", s.Ctx, types.FeeCollectorName,
+				tc.recipientModule,
 				tc.coins).Return(nil).Once()
 
-			if err := post.DeductCoins(s.MockBankKeeper, s.Ctx, tc.coins, "", true); (err != nil) != tc.wantErr {
+			if err := post.DeductCoins(s.MockBankKeeper, s.Ctx, tc.coins, tc.recipientModule, true); (err != nil) != tc.wantErr {
 				s.Errorf(err, "DeductCoins() error = %v, wantErr %v", err, tc.wantErr)
 			}
 		})

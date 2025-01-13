@@ -22,7 +22,8 @@ type Keeper struct {
 
 	// The address that is capable of executing a MsgParams message.
 	// Typically, this will be the governance module's address.
-	authority string
+	authority          string
+	feeRecipientModule string
 }
 
 // NewKeeper constructs a new feemarket keeper.
@@ -32,20 +33,24 @@ func NewKeeper(
 	authKeeper types.AccountKeeper,
 	resolver types.DenomResolver,
 	authority string,
+	feeRecipientModule string,
 ) *Keeper {
 	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
 		panic(fmt.Sprintf("invalid authority address: %s", authority))
 	}
 
-	k := &Keeper{
-		cdc:       cdc,
-		storeKey:  storeKey,
-		ak:        authKeeper,
-		resolver:  resolver,
-		authority: authority,
+	if recipientAddr := authKeeper.GetModuleAddress(feeRecipientModule); recipientAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", feeRecipientModule))
 	}
 
-	return k
+	return &Keeper{
+		cdc:                cdc,
+		storeKey:           storeKey,
+		ak:                 authKeeper,
+		resolver:           resolver,
+		authority:          authority,
+		feeRecipientModule: feeRecipientModule,
+	}
 }
 
 // Logger returns a feemarket module-specific logger.
@@ -56,6 +61,11 @@ func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
 // GetAuthority returns the address that is capable of executing a MsgUpdateParams message.
 func (k *Keeper) GetAuthority() string {
 	return k.authority
+}
+
+// GetFeeRecipientModule returns the module account that the fee will be sent to.
+func (k *Keeper) GetFeeRecipientModule() string {
+	return k.feeRecipientModule
 }
 
 // GetEnabledHeight returns the height at which the feemarket was enabled.
