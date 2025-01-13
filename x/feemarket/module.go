@@ -3,6 +3,7 @@ package feemarket
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
@@ -25,7 +26,7 @@ import (
 )
 
 // ConsensusVersion is the x/feemarket module's consensus version identifier.
-const ConsensusVersion = 1
+const ConsensusVersion = 2
 
 var (
 	_ module.HasName        = AppModule{}
@@ -115,9 +116,14 @@ func (am AppModule) IsOnePerModuleType() {}
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // RegisterServices registers the module's services with the app's module configurator.
-func (am AppModule) RegisterServices(cfc module.Configurator) {
-	types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(&am.k))
-	types.RegisterQueryServer(cfc.QueryServer(), keeper.NewQueryServer(am.k))
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServer(&am.k))
+	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServer(am.k))
+
+	m := keeper.NewMigrator(am.k)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/feemarket from version 1 to 2: %v", err))
+	}
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the feemarket
