@@ -187,7 +187,7 @@ func TestSendTip(t *testing.T) {
 					tc.coins).Return(nil).Once()
 			}
 
-			if _, err := post.SendTip(s.MockBankKeeper, s.Ctx, tc.sendToProposer, tc.recipientModule, accs[1].Account.GetAddress(), tc.coins); (err != nil) != tc.wantErr {
+			if err := post.SendTip(s.MockBankKeeper, s.Ctx, tc.sendToProposer, tc.recipientModule, accs[1].Account.GetAddress(), tc.coins); (err != nil) != tc.wantErr {
 				s.Errorf(err, "SendTip() error = %v, wantErr %v", err, tc.wantErr)
 			}
 		})

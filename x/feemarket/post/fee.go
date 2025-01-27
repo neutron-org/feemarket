@@ -174,7 +174,13 @@ func (dfd FeeMarketDeductDecorator) PayOutFeeAndTip(ctx sdk.Context, fee, tip sd
 
 	proposer := sdk.AccAddress(ctx.BlockHeader().ProposerAddress)
 	if !tip.IsNil() {
-		tipPayee, err := SendTip(dfd.bankKeeper, ctx, params.SendTipToProposer, feeRecipientModule, proposer, sdk.NewCoins(tip))
+		tipPayee := proposer.String()
+
+		if !params.SendTipToProposer {
+			tipPayee = dfd.accountKeeper.GetModuleAddress(feeRecipientModule).String()
+		}
+
+		err := SendTip(dfd.bankKeeper, ctx, params.SendTipToProposer, feeRecipientModule, proposer, sdk.NewCoins(tip))
 		if err != nil {
 			return err
 		}
@@ -211,21 +217,18 @@ func SendTip(
 	feeRecipientModule string,
 	proposer sdk.AccAddress,
 	coins sdk.Coins,
-) (string, error) {
+) error {
 	var err error
-
-	tipPayee := feeRecipientModule
 
 	if sendToProposer {
 		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, feemarkettypes.FeeCollectorName, proposer, coins)
-		tipPayee = proposer.String()
 	} else {
 		err = bankKeeper.SendCoinsFromModuleToModule(ctx, feemarkettypes.FeeCollectorName, feeRecipientModule, coins)
 	}
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return tipPayee, nil
+	return nil
 }
