@@ -89,4 +89,8 @@ message Params {
   // DistributeFees is a boolean that determines whether the fees are burned or
   // distributed to all stakers.
   bool distribute_fees = 12;
+
+  // SendTipToProposer is a boolean that determines whether the tip is sent to a
+  // proposer or to a module account.
+  bool send_tip_to_proposer = 13;
 }

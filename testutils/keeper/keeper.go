@@ -85,5 +85,6 @@ func FeeMarket(
 		authKeeper,
 		&feemarkettypes.TestDenomResolver{},
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		authtypes.FeeCollectorName,
 	)
 }

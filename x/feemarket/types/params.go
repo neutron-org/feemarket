@@ -20,6 +20,8 @@ func NewParams(
 	maxLearningRate math.LegacyDec,
 	feeDenom string,
 	enabled bool,
+	distributeFees bool,
+	sendTipToProposer bool,
 ) Params {
 	return Params{
 		Alpha:               alpha,
@@ -33,6 +35,8 @@ func NewParams(
 		Window:              window,
 		FeeDenom:            feeDenom,
 		Enabled:             enabled,
+		DistributeFees:      distributeFees,
+		SendTipToProposer:   sendTipToProposer,
 	}
 }
 

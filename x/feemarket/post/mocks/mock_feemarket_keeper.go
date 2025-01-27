@@ -43,6 +43,24 @@ func (_m *FeeMarketKeeper) GetEnabledHeight(ctx types.Context) (int64, error) {
 	return r0, r1
 }
 
+// GetFeeRecipientModule provides a mock function with given fields:
+func (_m *FeeMarketKeeper) GetFeeRecipientModule() string {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetFeeRecipientModule")
+	}
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
+}
+
 // GetMinGasPrice provides a mock function with given fields: ctx, denom
 func (_m *FeeMarketKeeper) GetMinGasPrice(ctx types.Context, denom string) (types.DecCoin, error) {
 	ret := _m.Called(ctx, denom)

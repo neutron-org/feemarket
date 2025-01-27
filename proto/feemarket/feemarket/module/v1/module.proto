@@ -13,4 +13,7 @@ message Module {
   // Authority defines the custom module authority. If not set, defaults to the
   // governance module.
   string authority = 1;
+
+  // FeeRecipientModule defines the custom module account that the fee will be sent to.
+  string fee_recipient_module = 2;
 }
