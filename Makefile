@@ -204,6 +204,6 @@ mocks:
 	@echo "--> generating mocks"
 	@go install github.com/vektra/mockery/v2
 	@go generate ./...
-	make format
+	#make format
 
 .PHONY: format mocks
