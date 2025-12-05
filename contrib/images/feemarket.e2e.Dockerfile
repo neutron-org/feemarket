@@ -3,6 +3,8 @@ FROM golang:1.24-bullseye AS builder
 WORKDIR /src/feemarket
 COPY . .
 
+ENV GOTOOLCHAIN go1.24.10
+
 RUN make tidy
 RUN make build-test-app
 
