@@ -106,7 +106,7 @@ func (s *TestSuite) QueryBalance(user ibc.Wallet) sdk.Coin {
 
 	resp, err := c.Balance(context.Background(), &banktypes.QueryBalanceRequest{
 		Address: user.FormattedAddress(),
-		Denom:   defaultDenom,
+		Denom:   s.denom,
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(*resp.Balance)
