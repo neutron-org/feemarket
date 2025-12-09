@@ -225,7 +225,7 @@ require (
 )
 
 replace (
-	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
+	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.11.0.20250725182846-908df9d4e2e0
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )

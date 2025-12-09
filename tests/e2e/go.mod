@@ -3,7 +3,7 @@ module github.com/skip-mev/feemarket/tests/e2e
 go 1.24.10
 
 replace (
-	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
+	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.11.0.20250725182846-908df9d4e2e0
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 	github.com/ChainSafe/go-schnorrkel/1 => github.com/ChainSafe/go-schnorrkel v1.1.0
