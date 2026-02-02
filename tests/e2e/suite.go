@@ -29,7 +29,10 @@ import (
 const (
 	envKeepAlive = "FEEMARKET_INTEGRATION_KEEPALIVE"
 	initBalance  = 30000000000000
-	defaultDenom = "stake"
+)
+
+var (
+	DefaultDenom = "stake"
 )
 
 var r *rand.Rand
@@ -211,7 +214,7 @@ func NewIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerI
 	suite := &TestSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
-		denom:        defaultDenom,
+		denom:        DefaultDenom,
 		gasPrices:    "",
 		authority:    authtypes.NewModuleAddress(govtypes.ModuleName),
 		icc:          DefaultInterchainConstructor,
